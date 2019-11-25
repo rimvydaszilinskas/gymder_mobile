@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:model/pages/home.dart';
 import 'package:model/pages/login.dart';
 import 'package:model/pages/register.dart';
 import 'package:model/state/auth_state.dart';
@@ -23,12 +24,15 @@ class Application extends StatelessWidget {
                         );
                     } else if(state.authState == AuthState.none) {
                         authenticationBLoC.add(AuthenticationStateEvent.login);
-                        return Text('Loading1');
+                        return Text('Start requesting');
                     } else if(state.authState == AuthState.loading) {
-                        return Text('Loading2');
+                        return Text('Loading');
                     }
                     // Default return
-                    return Text('Logged in');
+                    return BlocProvider.value(
+                        value: authenticationBLoC,
+                        child: HomePage()
+                    );
                 },
         );
     }

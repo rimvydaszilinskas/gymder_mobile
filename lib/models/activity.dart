@@ -18,9 +18,21 @@ class Activity {
     bool _needsApproval;
 
     Activity(this._title, this._description, this._isGroup, this._time,
-        this._address, this._activityType, this._duration, this._tags, this._public,
+        this._address, this._activityType, this._duration, this._public,
         this._needsApproval, this._user, {String uuid})
         :this._uuid = uuid;
+
+    Activity.fromJson(Map<String, dynamic> json){
+        this._uuid = json['uuid'];
+        this._title = json['title'];
+        this._description = json['description'];
+        this._isGroup = json['is_group'];
+        this._time = DateTime.parse(json['time']);
+        this._duration = json['duration'];
+        this._user = User.fromJson(json['user']);
+        this._public = json['public'];
+        this._needsApproval = json['needs_approval'];
+    }
 
     List<Tag> get tags => _tags;
 

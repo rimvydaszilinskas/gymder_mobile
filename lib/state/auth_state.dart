@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:bloc/bloc.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart';
+import 'package:model/constants/server.dart';
 import 'package:model/models/user.dart';
 import 'package:model/state/models/auth_model.dart';
 
@@ -29,6 +30,7 @@ class AuthenticationBLoC extends Bloc<AuthenticationStateEvent, AuthenticationMo
                     yield this.state;
                     break;
                 }
+
                 AuthenticationModel copyOfState = this.state;
                 copyOfState.authState = AuthState.loading;
 
@@ -44,9 +46,8 @@ class AuthenticationBLoC extends Bloc<AuthenticationStateEvent, AuthenticationMo
                     break;
                 }
 
-                // TODO fix the url
                 var response = await get(
-                    'url',
+                    SERVERURL.AUTHENTICATION_PING,
                     headers: {
                         'content-body': 'application/json',
                         'Authorization': 'Token ${token}'

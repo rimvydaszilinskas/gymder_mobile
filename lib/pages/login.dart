@@ -66,7 +66,7 @@ class LoginPageState extends State<LoginPage> {
         });
 
         var response = await post(
-            URL.LOGIN,
+            SERVERURL.LOGIN,
             body: body,
             headers: {'content-type': 'application/json'}
         );
@@ -136,6 +136,16 @@ class LoginPageState extends State<LoginPage> {
                                 )
                             ),
                         ),
+                        SizedBox(
+                            height: 25.0,
+                        ),
+                        this.errorMessage != null ? Text(
+                            this.errorMessage,
+                            style: TextStyle(
+                                fontSize: 15.0,
+                                color: Colors.red
+                            ),
+                        ) : Text(''),
                         SizedBox(
                             height: 25.0,
                         ),

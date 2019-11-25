@@ -21,6 +21,14 @@ class User {
         this._token = token;
     }
 
+    User.fromJson(Map<String, dynamic> json):
+            this._uuid = json['uuid'],
+            this._email = json['email'],
+            this._username = json['username'],
+            this._firstName = json['first_name'],
+            this._lastName = json['last_name'],
+            this._token = json['token'];
+
     String get token => this._token;
 
     String get lastName => _lastName;
