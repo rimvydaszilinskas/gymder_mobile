@@ -1,6 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:model/models/activity.dart';
+import 'package:model/state/auth_state.dart';
 
 class HomeList extends StatelessWidget {
     final List<Activity> activities;
@@ -9,12 +11,19 @@ class HomeList extends StatelessWidget {
 
     @override
     Widget build(BuildContext context) {
-        print(this.activities.length);
+        final AuthenticationBLoC authenticationBLoC = BlocProvider.of<AuthenticationBLoC>(context);
+
         List<Widget> cards = new List<Widget>();
 
         this.activities.forEach((element) {
-            print(element.time);
             String individual = element.isGroup ? 'Group' : 'Individual';
+
+            // Assemble the subtitle string of workout format and date
+            String subtitle = individual + ' | '
+                + element.time.year.toString() + '-'
+                + element.time.month.toString() + '-'
+                + element.time.day.toString();
+
             cards.add(
                 Card(
                     child: Column(
@@ -23,8 +32,14 @@ class HomeList extends StatelessWidget {
                             ListTile(
                                 leading: Icon(Icons.album, size: 50),
                                 title: Text(element.title),
-                                subtitle: Text(individual),
-                                onTap: () {},
+                                subtitle: Text(subtitle),
+                                onTap: () {
+                                    Navigator.pushNamed(
+                                        context, '/activity', arguments: {
+                                            'user': authenticationBLoC.state.user,
+                                            'activity': element
+                                        });
+                                },
                             )
                         ],
                     ),

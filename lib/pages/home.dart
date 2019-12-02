@@ -76,6 +76,7 @@ class HomePageState extends State<HomePage> {
 
     @override
     Widget build(BuildContext context) {
+        // ignore: close_sinks
         final AuthenticationBLoC authenticationBLoC =
             BlocProvider.of<AuthenticationBLoC>(context);
 

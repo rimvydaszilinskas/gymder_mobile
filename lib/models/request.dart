@@ -10,4 +10,10 @@ class Request {
     Request(this.user, this.activity, this.status, {String uuid}) {
         this.uuid = uuid;
     }
+
+    Request.fromJson(Map<String, dynamic> json) {
+        this.uuid = json['uuid'];
+        this.user = User.fromJson(json['user']);
+        this.status = json['status'];
+    }
 }

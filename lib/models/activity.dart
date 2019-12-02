@@ -1,5 +1,6 @@
 import 'package:model/models/activityType.dart';
 import 'package:model/models/address.dart';
+import 'package:model/models/request.dart';
 import 'package:model/models/tag.dart';
 import 'package:model/models/user.dart';
 
@@ -11,11 +12,15 @@ class Activity {
     DateTime _time;
     Address _address;
     ActivityType _activityType;
+    int _approvedRequests;
+    List<Request> _requests;
     int _duration;
     List<Tag> _tags;
     User _user;
     bool _public;
     bool _needsApproval;
+    String _type;
+    int _maxAttendees;
 
     Activity(this._title, this._description, this._isGroup, this._time,
         this._address, this._activityType, this._duration, this._public,
@@ -32,6 +37,22 @@ class Activity {
         this._user = User.fromJson(json['user']);
         this._public = json['public'];
         this._needsApproval = json['needs_approval'];
+        this._approvedRequests = json['approved_requests'];
+        List<dynamic> requests = json['requests'];
+        this._requests = List<Request>();
+
+        if (json['max_attendeed'] != null) {
+            this._type = 'Group';
+            this._maxAttendees = json['max_attendees'];
+        } else {
+            this._type = 'Individual';
+        }
+
+        if(requests != null) {
+            requests.forEach((element) {
+                this._requests.add(Request.fromJson(element));
+            });
+        }
     }
 
     List<Tag> get tags => _tags;
@@ -112,6 +133,38 @@ class Activity {
 
     set user(User value) {
         _user = value;
+    }
+
+    String get datetime {
+        return this.time.year.toString() + '-'
+            + this.time.month.toString() + '-'
+            + this.time.day.toString() + ' '
+            + this.time.hour.toString() + ':'
+            + this.time.minute.toString();
+    }
+
+    List<Request> get requests => _requests;
+
+    set requests(List<Request> value) {
+        _requests = value;
+    }
+
+    int get approvedRequests => _approvedRequests;
+
+    set approvedRequests(int value) {
+        _approvedRequests = value;
+    }
+
+    String get type => _type;
+
+    set type(String value) {
+        _type = value;
+    }
+
+    int get maxAttendees => _maxAttendees;
+
+    set maxAttendees(int value) {
+        _maxAttendees = value;
     }
 
 

@@ -34,7 +34,6 @@ class LoginPageState extends State<LoginPage> {
     }
 
     void _handleLoginClick() async {
-        print('click');
         bool error = false;
 
         this.setState(() {
