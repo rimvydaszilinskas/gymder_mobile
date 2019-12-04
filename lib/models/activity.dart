@@ -35,6 +35,7 @@ class Activity {
         this._time = DateTime.parse(json['time']);
         this._duration = json['duration'];
         this._user = User.fromJson(json['user']);
+        this.address = Address.fromJson(json['address']);
         this._public = json['public'];
         this._needsApproval = json['needs_approval'];
         this._approvedRequests = json['approved_requests'];

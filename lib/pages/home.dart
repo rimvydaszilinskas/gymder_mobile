@@ -54,7 +54,7 @@ class HomePageState extends State<HomePage> {
                 SERVERURL.USER_ACTIVITIES,
                 headers: {
                     'content-body': 'application/json',
-                    'Authorization': 'Token ${token}'
+                    'Authorization': 'Token $token'
                 }
             );
 

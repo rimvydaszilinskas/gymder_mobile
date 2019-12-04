@@ -67,7 +67,7 @@ class LoginPageState extends State<LoginPage> {
         var response = await post(
             SERVERURL.LOGIN,
             body: body,
-            headers: {'content-type': 'application/json'}
+            headers: {'Content-Type': 'application/json'}
         );
 
         if (response.statusCode == 200) {

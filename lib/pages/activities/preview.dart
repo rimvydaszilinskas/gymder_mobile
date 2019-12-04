@@ -6,6 +6,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart';
 import 'package:model/constants/server.dart';
 import 'package:model/models/activity.dart';
+import 'package:model/models/post.dart';
 import 'package:model/models/request.dart' as gymder;
 import 'package:model/models/user.dart';
 
@@ -23,10 +24,18 @@ class ActivityPreview extends StatefulWidget {
 
 class ActivityPreviewState extends State<ActivityPreview> {
     final FlutterSecureStorage storage = FlutterSecureStorage();
+    final TextEditingController postEntryController = TextEditingController();
+
     Activity activity;
+    List<Post> posts;
+    bool allowPost = true;
+    String postError;
 
     ActivityPreviewState() {
+        this.posts = new List<Post>();
+
         this.fetchRequests();
+        this.fetchPosts();
     }
     
     void fetchRequests() async {
@@ -37,7 +46,7 @@ class ActivityPreviewState extends State<ActivityPreview> {
                 SERVERURL.USER_ACTIVITIES + this.widget.activity.uuid + '/',
                 headers: {
                     'content-body': 'application/json',
-                    'Authorization': 'Token ${token}'
+                    'Authorization': 'Token $token'
                 });
 
             if (response.statusCode == 200) {
@@ -46,6 +55,83 @@ class ActivityPreviewState extends State<ActivityPreview> {
                 });
             }
         }
+    }
+
+    void fetchPosts() async {
+        String token = await this.storage.read(key: 'apiToken');
+
+        if(token != null) {
+            var response = await get(
+                SERVERURL.USER_ACTIVITIES + this.widget.activity.uuid + '/posts/',
+                headers: {
+                    'content-type': 'application/json',
+                    'Authorization': 'Token $token'
+                });
+
+            if (response.statusCode == 200) {
+                List<dynamic> activityMap = jsonDecode(response.body);
+
+                activityMap.forEach((element) {
+                    Post post = Post.fromJson(element);
+
+                    this.setState(() {
+                        this.posts.add(post);
+                    });
+                });
+            }
+        }
+    }
+
+    void createPost() async {
+        // Create post in the backend from the data entered in the field
+        if (this.postEntryController.text.length < 3) {
+            this.setState(() {
+                this.postError = 'Post must be at least 3 characters long';
+            });
+
+            return;
+        }
+
+        this.setState(() {
+            this.postError = null;
+            this.allowPost = false;
+        });
+
+        String token = await this.storage.read(key: 'apiToken');
+
+        String body = this.postEntryController.text.toString();
+
+        if (token != null) {
+            var response = await post(
+                SERVERURL.USER_ACTIVITIES + this.widget.activity.uuid + '/posts/',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Token $token'
+                },
+                body: jsonEncode({
+                    'body': body
+                })
+            );
+
+            if (response.statusCode == 201) {
+                var postJSON = jsonDecode(response.body);
+
+                Post newPost = Post.fromJson(postJSON);
+
+                this.setState(() {
+                    this.posts.insert(0, newPost);
+                    this.allowPost = true;
+                });
+
+                this.postEntryController.text = '';
+            } else {
+                this.setState(() {
+                    this.allowPost = true;
+                    this.postError = 'There was an error posting!';
+                });
+            }
+        }
+
     }
 
     String defineStatus() {
@@ -97,6 +183,62 @@ class ActivityPreviewState extends State<ActivityPreview> {
 
         return attendees;
     }
+
+    List<Widget> postsCards() {
+        List<Widget> posts = List<Widget>();
+
+        posts.add(Card(
+            child: Container(
+                padding: EdgeInsets.all(8.0),
+                child: Column(
+                    children: <Widget>[
+                        Row(
+                            children: <Widget>[
+                                Expanded(
+                                    child: TextField(
+                                        controller: this.postEntryController,
+                                        decoration: InputDecoration(
+                                            labelText: 'Post',
+                                            errorText: this.postError
+                                        ),
+                                    ),
+                                ),
+                                RaisedButton(
+                                    child: Text(
+                                        'Post',
+                                        style: TextStyle(
+                                            color: Colors.white,
+                                        ),
+                                    ),
+                                    onPressed: this.allowPost ? this.createPost : null,
+                                    color: Colors.blue,
+                                )
+                            ],
+                        )
+                    ],
+                ),
+            ),
+        ));
+
+        this.posts.forEach((post) {
+            String subtitleLine = '${post.user.username} | ${post.datetime}';
+
+            posts.add(Card(
+               child: Column(
+                   mainAxisSize: MainAxisSize.min,
+                   children: <Widget>[
+                       ListTile(
+                           leading: Icon(Icons.person),
+                           title: Text(post.body),
+                           subtitle: Text(subtitleLine),
+                       )
+                   ],
+               ),
+            ));
+        });
+
+        return posts;
+    }
     
     @override
     Widget build(BuildContext context) {
@@ -140,8 +282,8 @@ class ActivityPreviewState extends State<ActivityPreview> {
                 ),
                 body: TabBarView(
                     children: <Widget>[
-                        Column(
-                            // the main the view
+                        ListView(
+                            padding: EdgeInsets.all(8.0),
                             children: <Widget>[
                                 Card(
                                     child: Column(
@@ -157,6 +299,11 @@ class ActivityPreviewState extends State<ActivityPreview> {
                                                 leading: Icon(Icons.timer),
                                                 title: Text(
                                                     'Duration: ' + (this.activity != null ? this.activity.duration.toString() + ' minutes': 'Fetching')),
+                                            ),
+                                            Divider(),
+                                            ListTile(
+                                                leading: Icon(Icons.location_on),
+                                                title: Text(this.activity != null && this.activity.address != null ? this.activity.address.address : 'No location provided'),
                                             ),
                                             Divider(),
                                             ListTile(
@@ -179,12 +326,11 @@ class ActivityPreviewState extends State<ActivityPreview> {
                                             Divider(),
                                             ListTile(
                                                 leading: Icon(Icons.description),
-                                                title: Text(this.widget.activity.description),
+                                                title: Text(this.widget.activity.description.length != 0 ? this.widget.activity.description : 'No description'),
                                             ),
                                         ],
                                     ),
                                 ),
-                                Spacer(),
                                 Card(
                                     child: Column(
                                         mainAxisSize: MainAxisSize.min,
@@ -212,7 +358,10 @@ class ActivityPreviewState extends State<ActivityPreview> {
                             padding: EdgeInsets.all(8),
                             children: this.attendees()
                         ),
-                        Text('Message')
+                        ListView(
+                            padding: EdgeInsets.all(8),
+                            children: this.postsCards(),
+                        )
                     ],
                 ),
             ),

@@ -9,6 +9,12 @@ class Address {
         this._longitude = longitude;
     }
 
+    Address.fromJson(Map<String, dynamic> json) {
+        this._address = json['address'];
+        this._latitude = json['latitude'];
+        this._longitude = json['longitude'];
+    }
+
     double get longitude => this._longitude;
 
     set longitude(double value) {
