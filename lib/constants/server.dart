@@ -8,6 +8,8 @@ class SERVERURL {
     static const String AUTHENTICATION_PING = SERVERURL.BASE + '/m/auth/';
 
     static const String USER_ACTIVITIES = SERVERURL.BASE + '/m/activities/';
+    static const String SEARCH_ACTIVITIES = SERVERURL.BASE + '/api/activities/';
+    static const String NEARBY_ACTIVITIES = SERVERURL.BASE + '/api/activities/nearby/';
 
     static const String ACTIVITY_REQUEST_PREFIX = SERVERURL.BASE + '/api/activities/';
     static const String ACTIVITY_REQUEST_SUFFIX = '/requests/';
