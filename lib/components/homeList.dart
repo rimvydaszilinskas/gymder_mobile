@@ -11,6 +11,7 @@ class HomeList extends StatelessWidget {
 
     @override
     Widget build(BuildContext context) {
+        // ignore: close_sinks
         final AuthenticationBLoC authenticationBLoC = BlocProvider.of<AuthenticationBLoC>(context);
 
         List<Widget> cards = new List<Widget>();

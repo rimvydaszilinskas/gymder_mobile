@@ -35,14 +35,15 @@ class Activity {
         this._time = DateTime.parse(json['time']);
         this._duration = json['duration'];
         this._user = User.fromJson(json['user']);
-        this.address = Address.fromJson(json['address']);
+        if(json['address'] != null)
+            this.address = Address.fromJson(json['address']);
         this._public = json['public'];
         this._needsApproval = json['needs_approval'];
         this._approvedRequests = json['approved_requests'];
         List<dynamic> requests = json['requests'];
         this._requests = List<Request>();
 
-        if (json['max_attendeed'] != null) {
+        if (json['max_attendees'] != null) {
             this._type = 'Group';
             this._maxAttendees = json['max_attendees'];
         } else {
@@ -55,6 +56,14 @@ class Activity {
             });
         }
     }
+
+    Map<String, dynamic> toJson() =>
+        {
+            'title': this._title,
+            'description': this._description,
+            'time': this._time.toIso8601String(),
+            'duration': this._duration
+        };
 
     List<Tag> get tags => _tags;
 
@@ -167,6 +176,5 @@ class Activity {
     set maxAttendees(int value) {
         _maxAttendees = value;
     }
-
 
 }

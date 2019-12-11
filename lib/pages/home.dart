@@ -13,7 +13,6 @@ import 'package:model/constants/server.dart';
 import 'package:model/models/activity.dart';
 import 'package:model/models/user.dart';
 import 'package:model/state/auth_state.dart';
-import 'package:model/state/models/auth_model.dart';
 
 class HomePage extends StatefulWidget {
     /* Home page
@@ -97,6 +96,8 @@ class HomePageState extends State<HomePage> {
             );
 
             if (response.statusCode == 200) {
+                this.activities.clear();
+                
                 List<dynamic> activityMap = jsonDecode(response.body);
                 activityMap.forEach((element) {
                     Activity activity = Activity.fromJson(element);
@@ -130,7 +131,13 @@ class HomePageState extends State<HomePage> {
 
         return Scaffold(
             appBar: AppBar(
-                title: Text('Home')
+                title: Text('Home'),
+                actions: <Widget>[
+                    IconButton(
+                        icon: Icon(Icons.refresh),
+                        onPressed: this.fetchActivities,
+                    )
+                ],
             ),
             drawer: BlocProvider.value(
                 value: authenticationBLoC,
@@ -189,7 +196,11 @@ class HomePageState extends State<HomePage> {
                 ]
             ),
             floatingActionButton: this._currentIndex == 0 ? FloatingActionButton(
-                onPressed: () {},
+                onPressed: () {
+                    Navigator.pushNamed(context, '/activity/create', arguments: {
+                        'user': this.user
+                    });
+                },
                 child: Icon(Icons.add),
                 backgroundColor: Colors.blue,
             ) : FloatingActionButton(

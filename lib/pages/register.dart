@@ -5,10 +5,6 @@ import 'package:model/constants/styles.dart';
 import 'package:model/state/auth_state.dart';
 
 class RegisterPage extends StatefulWidget {
-    RegisterPage({var damn}) {
-        print(damn);
-    }
-
     @override
     State<StatefulWidget> createState() {
         return RegisterPageState();

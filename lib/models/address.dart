@@ -1,15 +1,18 @@
 class Address {
+    String _uuid;
     String _address;
     double _latitude;
     double _longitude;
 
-    Address({String address, double latitude, double longitude}) {
+    Address({String address, double latitude, double longitude, String uuid}) {
+        this._uuid = uuid;
         this._address = address;
         this._latitude = latitude;
         this._longitude = longitude;
     }
 
     Address.fromJson(Map<String, dynamic> json) {
+        this._uuid = json['uuid'];
         this._address = json['address'];
         this._latitude = json['latitude'];
         this._longitude = json['longitude'];
@@ -33,4 +36,9 @@ class Address {
         this._address = value;
     }
 
+    String get uuid => _uuid;
+
+    set uuid(String value) {
+        _uuid = value;
+    }
 }

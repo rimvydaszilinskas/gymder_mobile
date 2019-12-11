@@ -1,5 +1,15 @@
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 
-TextStyle InputStyle = TextStyle(
+const TextStyle InputStyle = TextStyle(
     fontSize: 20.0
+);
+
+const TextStyle LabelStyle = TextStyle(
+    fontSize: 18.0,
+    fontWeight: FontWeight.bold
+);
+
+const TextStyle DividerTextStyle = TextStyle(
+    fontSize: 22.0,
+    fontWeight: FontWeight.bold
 );

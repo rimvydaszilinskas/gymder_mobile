@@ -48,7 +48,6 @@ class ActivityPreviewState extends State<ActivityPreview> {
                     'content-body': 'application/json',
                     'Authorization': 'Token $token'
                 });
-
             if (response.statusCode == 200) {
                 this.setState(() {
                     this.activity = Activity.fromJson(jsonDecode(response.body));
@@ -154,25 +153,49 @@ class ActivityPreviewState extends State<ActivityPreview> {
 
     List<Widget> attendees() {
         List<Widget> attendees = List<Widget>();
+        bool isAdmin = this.widget.user.uuid == this.widget.activity.user.uuid;
 
         if(this.activity == null) {
             return attendees;
         }
 
-        this.activity.requests.forEach((element) {
+        this.activity.requests.forEach((request) {
             Widget card = Card(
                 child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: <Widget>[
                         ListTile(
                             leading: Icon(Icons.person),
-                            title: Text(element.user.username),
-                            subtitle: Text(element.user.email),
-                            trailing: RaisedButton(
+                            title: Text(request.user.username),
+                            subtitle: Text(request.user.email),
+                            trailing: isAdmin ? RaisedButton(
                                 child: Text(
-                                    'Hello world'
+                                    request.status[0].toUpperCase() + request.status.substring(1)
                                 ),
-                            ),
+                                onPressed: () {
+                                    showDialog(context: context, builder: (BuildContext context) {
+                                        return AlertDialog(
+                                            title: Text(request.user.username),
+                                            // content: Text(),
+                                            actions: <Widget>[
+                                                FlatButton(
+                                                    child: Text(request.status != 'approved' ? 'Approve' : 'Deny'),
+                                                    onPressed: () {
+                                                            this.approveOrDeclineRequest(request.uuid, request.status != 'approved');
+                                                            Navigator.of(context).pop();
+                                                        },
+                                                ),
+                                                FlatButton(
+                                                    child: Text('Close'),
+                                                    onPressed: () {
+                                                        Navigator.of(context).pop();
+                                                    },
+                                                ),
+                                            ],
+                                        );
+                                    });
+                                },
+                            ) : null,
                         )
                     ],
                 ),
@@ -239,12 +262,91 @@ class ActivityPreviewState extends State<ActivityPreview> {
 
         return posts;
     }
+
+    void handleButtonClick(String status) async {
+        print('button click, status: ' + status);
+        String token = await this.storage.read(key: 'apiToken');
+
+        Response response = await post(
+            SERVERURL.ACTIVITY_REQUEST_PREFIX + this.activity.uuid + SERVERURL.ACTIVITY_REQUEST_SUFFIX,
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Token $token'
+            }
+        );
+
+        print(response.statusCode);
+        print(response.body);
+
+        if(response.statusCode == 201) {
+            // Request created
+            this.setState(() {
+                gymder.Request request = gymder.Request.fromJson(jsonDecode(response.body));
+                this.activity.requests.add(request);
+
+                if(request.status == 'approved') {
+                    this.activity.approvedRequests++;
+                }
+            });
+        } else if (response.statusCode == 200) {
+            // Request deleted
+            this.setState(() {
+                this.activity.requests.removeWhere((element) => element.user.uuid == this.widget.user.uuid);
+
+                if(status == 'Approved') {
+                    this.activity.approvedRequests--;
+                }
+            });
+        } else {
+            // Error?
+        }
+    }
+
+    void approveOrDeclineRequest(String uuid, bool approve) async {
+        String token = await this.storage.read(key: 'apiToken');
+
+        String url = SERVERURL.ACTIVITY_REQUEST_PREFIX + this.activity.uuid + SERVERURL.ACTIVITY_REQUEST_SUFFIX + uuid + '/';
+        var headers = {
+            'Content-Type': 'application/json',
+            'Authorization': 'Token $token'
+        };
+
+        Response response;
+
+        if (approve) {
+            response = await post(
+                url,
+                headers: headers
+            );
+        } else {
+            response = await delete(
+                url,
+                headers: headers
+            );
+        }
+
+        if(response.statusCode == 200) {
+            int index = this.activity.requests.indexWhere((element) => element.uuid == uuid);
+
+            this.setState(() {
+                if(approve && this.activity.requests[index].status != 'approved') {
+                    this.activity.approvedRequests++;
+                } else if(!approve && this.activity.requests[index].status == 'approved') {
+                    this.activity.approvedRequests--;
+                }
+
+                this.activity.requests[index].status = approve ? 'approved' : 'denied';
+
+            });
+        }
+    }
     
     @override
     Widget build(BuildContext context) {
         bool isOwner = this.widget.activity.user.uuid == this.widget.user.uuid;
         String buttonStatus;
         bool buttonActive = false;
+
 
         if (!isOwner) {
             buttonActive = true;
@@ -315,13 +417,13 @@ class ActivityPreviewState extends State<ActivityPreview> {
                                             ListTile(
                                                 leading: Icon(Icons.people),
                                                 title: Text(
-                                                    'Approved requests: ' + (this.activity != null ? this.activity.approvedRequests.toString() + (this.activity.type == 'Group' ? '/' + this.activity.maxAttendees.toString() : '/1') : 'Fetching')),
+                                                    'Approved requests: ' + (this.activity != null ? this.activity.approvedRequests.toString() + (this.activity.isGroup == true ? '/' + this.activity.maxAttendees.toString() : '/1') : 'Fetching')),
                                             ),
                                             Divider(),
                                             ListTile(
                                                 leading: Icon(Icons.info),
                                                 title: Text(
-                                                    'Activity type: ' + (this.activity != null ? this.activity.type : 'Fetching')),
+                                                    'Activity type: ' + (this.activity != null && this.activity.type != null ? this.activity.type : 'Fetching')),
                                             ),
                                             Divider(),
                                             ListTile(
@@ -344,7 +446,7 @@ class ActivityPreviewState extends State<ActivityPreview> {
                                                     children: <Widget>[
                                                         RaisedButton(
                                                             child: Text(buttonStatus, style: TextStyle(color: Colors.white),),
-                                                            onPressed: buttonActive ? () {} : null,
+                                                            onPressed: buttonActive ? () {this.handleButtonClick(buttonStatus);} : null,
                                                         )
                                                     ],
                                                 ),

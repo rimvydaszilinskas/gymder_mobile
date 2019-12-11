@@ -11,6 +11,11 @@ class SERVERURL {
     static const String SEARCH_ACTIVITIES = SERVERURL.BASE + '/api/activities/';
     static const String NEARBY_ACTIVITIES = SERVERURL.BASE + '/api/activities/nearby/';
 
+    static const String INDIVIDUAL_ACTIVITIES = SEARCH_ACTIVITIES + 'individual/';
+    static const String GROUP_ACTIVITIES = SEARCH_ACTIVITIES + 'group/';
+
     static const String ACTIVITY_REQUEST_PREFIX = SERVERURL.BASE + '/api/activities/';
     static const String ACTIVITY_REQUEST_SUFFIX = '/requests/';
+
+    static const String VERIFY_ADDRESS = SERVERURL.BASE + '/api/utils/addresses/';
 }

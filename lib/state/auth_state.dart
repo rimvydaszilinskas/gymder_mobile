@@ -50,7 +50,7 @@ class AuthenticationBLoC extends Bloc<AuthenticationStateEvent, AuthenticationMo
                     SERVERURL.AUTHENTICATION_PING,
                     headers: {
                         'content-body': 'application/json',
-                        'Authorization': 'Token ${token}'
+                        'Authorization': 'Token $token'
                     }
                 );
 
