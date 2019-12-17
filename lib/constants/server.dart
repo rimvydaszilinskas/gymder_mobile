@@ -18,4 +18,6 @@ class SERVERURL {
     static const String ACTIVITY_REQUEST_SUFFIX = '/requests/';
 
     static const String VERIFY_ADDRESS = SERVERURL.BASE + '/api/utils/addresses/';
+
+    static const String USER = SERVERURL.BASE + '/api/user/';
 }

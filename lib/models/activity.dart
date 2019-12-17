@@ -15,7 +15,7 @@ class Activity {
     int _approvedRequests;
     List<Request> _requests;
     int _duration;
-    List<Tag> _tags;
+    List<Tag> _tags = new List<Tag>();
     User _user;
     bool _public;
     bool _needsApproval;
@@ -48,6 +48,13 @@ class Activity {
             this._maxAttendees = json['max_attendees'];
         } else {
             this._type = 'Individual';
+        }
+
+        if(json['tags'] != null) {
+            json['tags'].forEach((tagJson) {
+                Tag tag = Tag.fromJson(tagJson);
+                this.tags.add(tag);
+            });
         }
 
         if(requests != null) {

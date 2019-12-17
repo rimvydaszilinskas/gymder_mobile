@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:http/http.dart';
+import 'package:model/constants/server.dart';
+import 'package:model/models/user.dart';
 import 'package:model/state/auth_state.dart';
 import 'package:model/state/models/auth_model.dart';
 
@@ -8,9 +12,12 @@ class DrawerNavigationWidget extends StatelessWidget {
      * Always pass the AuthenticationBLoC
      * Navigation should be handled here
      */
+    final FlutterSecureStorage storage = FlutterSecureStorage();
+    AuthenticationBLoC authenticationBLoC;
+
     @override
     Widget build(BuildContext context) {
-        final AuthenticationBLoC authenticationBLoC =
+        this.authenticationBLoC =
             BlocProvider.of<AuthenticationBLoC>(context);
 
         return BlocBuilder<AuthenticationBLoC, AuthenticationModel> (
@@ -65,7 +72,11 @@ class DrawerNavigationWidget extends StatelessWidget {
                                         )
                                     ],
                                 ),
-                                onTap: () {},
+                                onTap: () {
+                                    Navigator.pushNamed(context, '/profile', arguments: {
+                                        'user': state.user,
+                                    });
+                                },
                             ),
                             ListTile(
                                 title: Row(

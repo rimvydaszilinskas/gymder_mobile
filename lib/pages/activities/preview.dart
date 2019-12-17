@@ -8,6 +8,7 @@ import 'package:model/constants/server.dart';
 import 'package:model/models/activity.dart';
 import 'package:model/models/post.dart';
 import 'package:model/models/request.dart' as gymder;
+import 'package:model/models/tag.dart';
 import 'package:model/models/user.dart';
 
 class ActivityPreview extends StatefulWidget {
@@ -264,7 +265,6 @@ class ActivityPreviewState extends State<ActivityPreview> {
     }
 
     void handleButtonClick(String status) async {
-        print('button click, status: ' + status);
         String token = await this.storage.read(key: 'apiToken');
 
         Response response = await post(
@@ -274,9 +274,6 @@ class ActivityPreviewState extends State<ActivityPreview> {
                 'Authorization': 'Token $token'
             }
         );
-
-        print(response.statusCode);
-        print(response.body);
 
         if(response.statusCode == 201) {
             // Request created
@@ -300,6 +297,16 @@ class ActivityPreviewState extends State<ActivityPreview> {
         } else {
             // Error?
         }
+    }
+
+    String tagsToString(List<Tag> tags) {
+        String str = '';
+
+        tags.forEach((tag) {
+            str += '#${tag.title} ';
+        });
+
+        return str;
     }
 
     void approveOrDeclineRequest(String uuid, bool approve) async {
@@ -346,7 +353,6 @@ class ActivityPreviewState extends State<ActivityPreview> {
         bool isOwner = this.widget.activity.user.uuid == this.widget.user.uuid;
         String buttonStatus;
         bool buttonActive = false;
-
 
         if (!isOwner) {
             buttonActive = true;
@@ -429,6 +435,13 @@ class ActivityPreviewState extends State<ActivityPreview> {
                                             ListTile(
                                                 leading: Icon(Icons.description),
                                                 title: Text(this.widget.activity.description.length != 0 ? this.widget.activity.description : 'No description'),
+                                            ),
+                                            Divider(),
+                                            ListTile(
+                                                leading: Icon(Icons.grid_on),
+                                                title: Text(
+                                                    this.tagsToString(this.activity != null ? this.activity.tags : [])
+                                                ),
                                             ),
                                         ],
                                     ),

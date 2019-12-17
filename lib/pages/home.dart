@@ -97,7 +97,7 @@ class HomePageState extends State<HomePage> {
 
             if (response.statusCode == 200) {
                 this.activities.clear();
-                
+
                 List<dynamic> activityMap = jsonDecode(response.body);
                 activityMap.forEach((element) {
                     Activity activity = Activity.fromJson(element);

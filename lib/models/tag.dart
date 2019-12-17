@@ -5,6 +5,11 @@ class Tag {
     Tag(this._title, {String uuid})
         : this._uuid = uuid;
 
+    Tag.fromJson(Map<String, dynamic> json) {
+        this._uuid = json['uuid'];
+        this._title = json['title'];
+    }
+
     String get title => this._title;
 
     set title(String value) {

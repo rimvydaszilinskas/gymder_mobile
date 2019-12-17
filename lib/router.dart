@@ -1,9 +1,11 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:model/models/activity.dart';
+import 'package:model/models/user.dart';
 import 'package:model/pages/activities/create.dart';
 import 'package:model/pages/activities/preview.dart';
 import 'package:model/pages/activities/searchResults.dart';
+import 'package:model/pages/profile.dart';
 import 'package:model/pages/register.dart';
 
 class Router {
@@ -15,6 +17,9 @@ class Router {
             case '/register':
                 var data = settings.arguments as String;
                 return MaterialPageRoute(builder: (_) => RegisterPage());
+            case '/profile':
+                var data = settings.arguments as Map<String, dynamic>;
+                return MaterialPageRoute(builder: (_) => ProfilePreview(data['user']));
             case '/activity':
                 var data = settings.arguments as Map<String, dynamic>;
                 return MaterialPageRoute(builder: (_) => ActivityPreview(data['activity'], data['user']));
