@@ -5,6 +5,8 @@ import 'package:model/models/user.dart';
 import 'package:model/pages/activities/create.dart';
 import 'package:model/pages/activities/preview.dart';
 import 'package:model/pages/activities/searchResults.dart';
+import 'package:model/pages/group.dart';
+import 'package:model/pages/groups.dart';
 import 'package:model/pages/profile.dart';
 import 'package:model/pages/register.dart';
 
@@ -29,6 +31,12 @@ class Router {
             case '/activity/create':
                 var data = settings.arguments as Map<String, dynamic>;
                 return MaterialPageRoute(builder: (_) => CreateActivity(data['user']));
+            case '/groups':
+                var data = settings.arguments as Map<String, dynamic>;
+                return MaterialPageRoute(builder: (_) => GroupList(data['user']));
+            case '/group':
+                var data = settings.arguments as Map<String, dynamic>;
+                return MaterialPageRoute(builder: (_) => GroupPreview(data['group'], data['user']));
             default:
                 return MaterialPageRoute(builder: (_) => Scaffold());
         }

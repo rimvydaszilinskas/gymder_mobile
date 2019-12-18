@@ -88,7 +88,11 @@ class DrawerNavigationWidget extends StatelessWidget {
                                         )
                                     ],
                                 ),
-                                onTap: () {},
+                                onTap: () {
+                                    Navigator.pushNamed(context, '/groups', arguments: {
+                                        'user': state.user
+                                    });
+                                },
                             ),
                             Divider(),
                             ListTile(

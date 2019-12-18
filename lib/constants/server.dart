@@ -20,4 +20,9 @@ class SERVERURL {
     static const String VERIFY_ADDRESS = SERVERURL.BASE + '/api/utils/addresses/';
 
     static const String USER = SERVERURL.BASE + '/api/user/';
+    static const String USER_GROUPS = SERVERURL.BASE + '/api/groups/';
+
+    static const String GROUP_PREFIX = SERVERURL.USER_GROUPS;
+    static const String GROUP_ACTIVITIES_SUFFIX = '/activities/';
+    static const String GROUP_MEMBERSHIP_SUFFIX = '/memberships/';
 }
