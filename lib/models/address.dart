@@ -36,9 +36,9 @@ class Address {
         this._address = value;
     }
 
-    String get uuid => _uuid;
+    String get uuid => this._uuid;
 
     set uuid(String value) {
-        _uuid = value;
+        this._uuid = value;
     }
 }

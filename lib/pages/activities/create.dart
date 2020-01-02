@@ -141,16 +141,27 @@ class CreateActivityState extends State<CreateActivity> {
             return;
 
         String URL = this.numberOfAttendees == 1 ? SERVERURL.INDIVIDUAL_ACTIVITIES : SERVERURL.GROUP_ACTIVITIES;
-        var body = jsonEncode({
+        var data = {
             'title': this.titleEditingController.text.toString(),
             'description': this.descriptionEditingController.text.toString(),
             'time': this.dateTime.toIso8601String(),
             'duration': duration,
             'public': this.public,
             'needs_approval': this.requireApproval,
-            'max_attendees': this.numberOfAttendees,
-            'address_uuid': this.address.uuid
-        });
+            'max_attendees': this.numberOfAttendees
+        };
+
+        if (this.userPosition != null) {
+            data.addAll({
+                'latitude': this.userPosition.latitude.toString(),
+                'longitude': this.userPosition.longitude.toString()
+            });
+        } else {
+            data.addAll({
+                'address_uuid': this.address.uuid
+            });
+        }
+        var body = jsonEncode(data);
 
         Response response = await post(
             URL,
